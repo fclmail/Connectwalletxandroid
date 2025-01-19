@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Wallet</title>
+    <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3modal"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #date-time {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            margin-top: 100px;
+        }
+        button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="date-time"></div>
+    <div class="container">
+        <h1>Connect Wallet (Mobile-Friendly)</h1>
+        
+        <!-- Buttons for Wallet Connection Methods -->
+        <button id="connect1">Method 1: MetaMask Mobile</button>
+        <button id="connect2">Method 2: WalletConnect</button>
+        <button id="connect3">Method 3: Web3Modal</button>
+        <button id="connect4">Method 4: MetaMask Deep Link</button>
+        <button id="connect5">Method 5: QR Code</button>
+    </div>
+
+    <script>
+        // Display current date and time
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('date-time').textContent = now.toLocaleString();
+        }
+        setInterval(updateDateTime, 1000);
+
+        // Polygon network configuration
+        const polygonNetwork = {
+            chainId: '0x89', // Polygon Mainnet Chain ID
+            chainName: 'Polygon Mainnet',
+            nativeCurrency: {
+                name: 'MATIC',
+                symbol: 'MATIC',
+                decimals: 18
+            },
+            rpcUrls: ['https://polygon-rpc.com/'],
+            blockExplorerUrls: ['https://polygonscan.com/']
+        };
+
+        // Method 1: MetaMask Mobile App
+        document.getElementById('connect1').addEventListener('click', async () => {
+            if (window.ethereum) {
+                try {
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    console.log('Connected via MetaMask:', accounts[0]);
+                } catch (error) {
+                    console.error(error);
+                }
+            } else {
+                alert('MetaMask is not installed!');
+            }
+        });
+
+        // Method 2: WalletConnect
+        document.getElementById('connect2').addEventListener('click', async () => {
+            const provider = new WalletConnectProvider({
+                rpc: { 137: 'https://polygon-rpc.com/' } // Polygon Mainnet RPC
+            });
+            await provider.enable();
+            console.log('Connected via WalletConnect:', provider.accounts[0]);
+        });
+
+        // Method 3: Web3Modal
+        document.getElementById('connect3').addEventListener('click', async () => {
+            const providerOptions = {
+                walletconnect: {
+                    package: WalletConnectProvider,
+                    options: { rpc: { 137: 'https://polygon-rpc.com/' } }
+                }
+            };
+            const web3Modal = new Web3Modal({ cacheProvider: true, providerOptions });
+            const instance = await web3Modal.connect();
+            console.log('Connected via Web3Modal:', instance.selectedAddress);
+        });
+
+        // Method 4: MetaMask Deep Link
+        document.getElementById('connect4').addEventListener('click', () => {
+            const metamaskDeepLink = 'https://metamask.app.link/dapp/yourdomain.com';
+            window.location.href = metamaskDeepLink;
+        });
+
+        // Method 5: QR Code Integration (Placeholder for backend-generated QR)
+        document.getElementById('connect5').addEventListener('click', () => {
+            alert('QR Code integration requires backend support for generation.');
+        });
+    </script>
+</body>
+</html>
